@@ -1,98 +1,90 @@
-// JavaScript does not have a direct equivalent to PyQt5, but you can use Electron or similar frameworks to create desktop applications with web technologies.
-// The following is a conceptual translation to JavaScript using Electron.
+class ShrinkTabBar {
+    constructor(parent) {
+        this.parent = parent;
+        this.elideMode = 'ElideRight';
+        this.expanding = false;
+        this.tabsClosable = true;
+        this.addButton = document.createElement('button');
+        this.addButton.textContent = '+';
+        this.addButton.addEventListener('click', () => this.addClicked());
+        this._widthHint = -1;
+        this._initialized = false;
+        this._recursiveCheck = false;
+        this._recursiveTimer = setTimeout(() => this._unsetRecursiveCheck(), 0);
+        this._closeIconTimer = setTimeout(() => this._updateClosable(), 0);
+    }
 
-const { app, BrowserWindow, Menu } = require('electron');
-const path = require('path');
-const url = require('url');
+    addClicked() {
+        // Signal or event dispatch logic goes here
+    }
 
-class Leaf {
-  constructor() {
-    this.createWindow();
-  }
+    _unsetRecursiveCheck() {
+        this._recursiveCheck = false;
+    }
 
-  createWindow() {
-    this.window = new BrowserWindow({
-      width: 800,
-      height: 600,
-      webPreferences: {
-        contextIsolation: true,
-        nodeIntegration: false
-      }
-    });
+    _updateClosable() {
+        this.tabsClosable = this._widthHint >= this._minimumCloseWidth;
+    }
 
-    this.window.maximize();
-    this.window.loadURL('https://www.google.com');
+    _computeHints() {
+        // Compute hints logic goes here
+    }
 
-    this.window.webContents.on('did-finish-load', () => {
-      const title = this.window.getTitle();
-      this.window.setTitle(`${title} - Leaf`);
-    });
+    _updateSize() {
+        // Update size logic goes here
+    }
 
-    this.window.on('closed', () => {
-      this.window = null;
-    });
+    minimumTabSizeHint(index) {
+        if (!this._initialized) {
+            this._computeHints();
+        }
+        return this._minimumHint;
+    }
 
-    this.createMenu();
-  }
+    tabSizeHint(index) {
+        if (!this._initialized) {
+            this._computeHints();
+        }
+        return this._tabHint;
+    }
 
-  createMenu() {
-    const template = [
-      {
-        label: 'Navigation',
-        submenu: [
-          {
-            label: 'Go Back One Page',
-            click: () => {
-              this.window.webContents.goBack();
-            }
-          },
-          {
-            label: 'Go Forward One Page',
-            click: () => {
-              this.window.webContents.goForward();
-            }
-          },
-          {
-            label: 'Reload Current Page',
-            click: () => {
-              this.window.reload();
-            }
-          },
-          {
-            label: 'Leaf Home Page',
-            click: () => {
-              this.window.loadURL('https://www.google.com');
-            }
-          },
-          {
-            label: 'Stop loading Current Page',
-            click: () => {
-              this.window.webContents.stop();
-            }
-          }
-        ]
-      }
-    ];
+    tabLayoutChange() {
+        if (this.count() && !this._recursiveCheck) {
+            this._updateSize();
+            this._closeIconTimer = setTimeout(() => this._updateClosable(), 0);
+        }
+    }
 
-    const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
-  }
+    tabRemoved(index) {
+        // Tab removed logic goes here
+    }
+
+    changeEvent(event) {
+        // Change event logic goes here
+    }
+
+    resizeEvent(event) {
+        // Resize event logic goes here
+    }
 }
 
-app.on('ready', () => {
-  new Leaf();
-});
+class ShrinkTabWidget {
+    constructor(...args) {
+        this._tabBar = new ShrinkTabBar(this);
+        this.setTabBar(this._tabBar);
+        this._tabBar.addClicked = this.addClicked.bind(this);
+    }
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+    addClicked() {
+        // Signal or event dispatch logic goes here
+    }
 
-app.on('activate', () => {
-  if (Leaf.window === null) {
-    new Leaf();
-  }
-});
- note
+    setTabBar(tabBar) {
+        // Set tab bar logic goes here
+    }
 
+    resizeEvent(event) {
+        this._tabBar._updateSize();
+        // Call parent resize event logic if needed
+    }
+}
